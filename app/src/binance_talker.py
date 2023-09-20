@@ -35,12 +35,8 @@ class BinanceConnector:
         return assets_that_cost_more_than_x
 
     def _clean_tickers_list(self, tickers_list: list[dict]):
-        # It's probably can be refactored, because this is kinda shit
-        spot_pairs = [x.get("symbol") for x in self.c.get_exchange_info().get("symbols")]
-        for x in tickers_list:
-            if f"{x.get('symbol', '')}USDT" not in spot_pairs:
-                tickers_list.remove(x)
-        return tickers_list
+    	spot_pairs = [x.get("symbol") for x in self.c.get_exchange_info().get("symbols")]
+    	return [x for x in tickers_list if f"{x.get('symbol', '')}USDT" in spot_pairs]
 
     def _get_tickers_price(self, tickers_to_search: list[dict]):
         result_pairs = []
