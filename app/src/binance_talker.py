@@ -8,7 +8,8 @@ from .calculations import is_more_than_min_order
 class BinanceConnector:
     c = None
 
-    def __init__(self):
+    def __init__(self, ticker_to_check):
+	self.ticker_to_check = ticker_to_check
         self.c = self._create_connection()
 
     def get_account_data(self):
@@ -16,6 +17,12 @@ class BinanceConnector:
         tickers_for_search = self._clean_tickers_list(tickers_for_search)
         tickers_price = self._get_tickers_price(tickers_for_search)
         tickers_full_info = self._append_exchange_info_about_ticker(tickers_price)
+
+	#Checks whether the ticker is in env tickers_list
+	tickers_list = environ.get("tickers_list")
+	if tickers_list and self.ticker_to_check in tickers_list.split(","):
+		print(f"{self.ticker_to_check} is in the ticker list.")
+
         return [is_more_than_min_order(x) for x in tickers_full_info]
 
     @staticmethod
