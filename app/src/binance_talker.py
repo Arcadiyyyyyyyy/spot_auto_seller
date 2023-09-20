@@ -20,10 +20,9 @@ class BinanceGetInfoConnector:
     def get_account_data(self):
         spot_balance = self._get_spot_balance()
         tickers_for_search = self._clean_tickers_list(spot_balance)
-        tickers_with_exchange_info = self._append_exchange_info_about_ticker(tickers_for_search)
-        tickers_calculated_min_order_info = [
-            is_more_than_min_order(x) for x in self._get_tickers_price(tickers_with_exchange_info)
-        ]
+        tickers_with_price = self._get_tickers_price(tickers_for_search)
+        tickers_with_exchange_info = self._append_exchange_info_about_ticker(tickers_with_price)
+        tickers_calculated_min_order_info = [is_more_than_min_order(x) for x in tickers_with_exchange_info]
         return tickers_calculated_min_order_info
 
     def _get_spot_balance(self) -> list[dict]:
