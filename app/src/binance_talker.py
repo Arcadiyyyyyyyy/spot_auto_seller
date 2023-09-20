@@ -12,7 +12,7 @@ class BinanceConnector:
 
     def get_account_data(self):
         tickers_for_search = self._get_spot_balance()
-        env_file_path = "/Users/vaceslavstesenko/PycharmProjects/pythonProject1/spot_auto_seller_/app/src/.env"
+        env_file_path = "spot_auto_seller_/app/src/.env"
         if os.path.exists(env_file_path):
             with open(env_file_path, "r") as env_file:
                 LIST_OF_TICKERS_TO_SELL = env_file.read().strip().split(',')
