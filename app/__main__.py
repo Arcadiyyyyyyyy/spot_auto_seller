@@ -1,6 +1,9 @@
-from src.config import Settings, configure_logging
+import logging
+
 from dotenv import load_dotenv
-from src.binance_talker import BinanceConnector
+
+from src.config import Settings, configure_logging
+from src.binance_talker import BinanceGetInfoConnector
 
 
 def main():
@@ -8,7 +11,7 @@ def main():
     Settings()
     configure_logging()
 
-    print(BinanceConnector().get_account_data())
+    logging.info("Started!")
 
 
 if __name__ == "__main__":

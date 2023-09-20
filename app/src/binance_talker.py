@@ -1,7 +1,7 @@
 from binance import Client
 from os import environ
 
-from .static.constant import MinimumToDisplay
+from .static.constant import MinimumToDisplay, Other
 from .calculations import is_more_than_min_order
 
 
@@ -18,9 +18,13 @@ class BinanceGetInfoConnector:
         self.c = _create_connection()
 
     def get_account_data(self):
-        tickers_for_search = self._get_spot_balance()
-        tickers_for_search = self._clean_tickers_list(tickers_for_search)
-        return self._get_tickers_price(tickers_for_search)
+        spot_balance = self._get_spot_balance()
+        tickers_for_search = self._clean_tickers_list(spot_balance)
+        tickers_with_exchange_info = self._append_exchange_info_about_ticker(tickers_for_search)
+        tickers_calculated_min_order_info = [
+            is_more_than_min_order(x) for x in self._get_tickers_price(tickers_with_exchange_info)
+        ]
+        return tickers_calculated_min_order_info
 
     def _get_spot_balance(self) -> list[dict]:
         assets_that_cost_more_than_x = []
@@ -75,6 +79,12 @@ class BinancePostInfoConnector:
     def __init__(self):
         self.c = _create_connection()
 
-    def sell_all_spot_coins_with_ticker(self, ticker):
-        raise NotImplementedError
-        self.c.order_market()
+    def sell_all_spot_coins_with_ticker(self, ticker_info: dict):
+        ticker = ticker_info.get("symbol")
+        quantity = ticker_info.get("available_to_sell_coin") * Other.sell_order_multiplier.value
+
+        self.c.order_market(
+            symbol=ticker,
+            side="SELL",
+            quantity=quantity
+        )
