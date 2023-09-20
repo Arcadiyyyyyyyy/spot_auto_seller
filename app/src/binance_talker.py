@@ -2,6 +2,7 @@ from binance import Client
 from os import environ
 
 from .static.constant import MinimumToDisplay
+from .calculations import is_more_than_min_order
 
 
 class BinanceConnector:
@@ -13,7 +14,9 @@ class BinanceConnector:
     def get_account_data(self):
         tickers_for_search = self._get_spot_balance()
         tickers_for_search = self._clean_tickers_list(tickers_for_search)
-        return self._get_tickers_price(tickers_for_search)
+        tickers_price = self._get_tickers_price(tickers_for_search)
+        tickers_full_info = self._append_exchange_info_about_ticker(tickers_price)
+        return [is_more_than_min_order(x) for x in tickers_full_info]
 
     @staticmethod
     def _create_connection() -> Client:
@@ -35,8 +38,27 @@ class BinanceConnector:
         return assets_that_cost_more_than_x
 
     def _clean_tickers_list(self, tickers_list: list[dict]):
-    	spot_pairs = [x.get("symbol") for x in self.c.get_exchange_info().get("symbols")]
-    	return [x for x in tickers_list if f"{x.get('symbol', '')}USDT" in spot_pairs]
+        spot_pairs = [x.get("symbol") for x in self.c.get_exchange_info().get("symbols")]
+        return [x for x in tickers_list if f"{x.get('asset', '')}USDT" in spot_pairs]
+
+    def _append_exchange_info_about_ticker(self, tickers_list: list[dict]):
+        def find(lst, key, value):
+            for i, dic in enumerate(lst):
+                if dic.get(key, "") == value:
+                    return i
+            return -1
+
+        exchange_info = self.c.get_exchange_info().get("symbols")
+        tickers_to_search = [ticker.get("symbol") for ticker in tickers_list]
+        return_list = []
+
+        for ticker in exchange_info:
+            symbol = ticker.get("symbol")
+            if symbol in tickers_to_search:
+                index = find(tickers_list, "symbol", symbol)
+                return_list.append({**tickers_list[index], **ticker})
+
+        return return_list
 
     def _get_tickers_price(self, tickers_to_search: list[dict]):
         result_pairs = []
