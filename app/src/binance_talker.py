@@ -7,7 +7,7 @@ from pydantic import BaseSettings
 from .static.constant import MinimumToDisplay
 from .calculations import is_more_than_min_order
 
-#привет
+#привет-пока
 class BinanceConnector:
     c = None
 
