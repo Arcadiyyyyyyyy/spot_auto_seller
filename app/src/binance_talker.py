@@ -2,6 +2,7 @@ from binance import Client
 from os import environ
 
 from .static.constant import MinimumToDisplay
+from .calculations import is_more_than_min_order
 
 
 def _create_connection() -> Client:
@@ -36,7 +37,26 @@ class BinanceGetInfoConnector:
 
     def _clean_tickers_list(self, tickers_list: list[dict]):
         spot_pairs = [x.get("symbol") for x in self.c.get_exchange_info().get("symbols")]
-        return [x for x in tickers_list if f"{x.get('symbol', '')}USDT" in spot_pairs]
+        return [x for x in tickers_list if f"{x.get('asset', '')}USDT" in spot_pairs]
+
+    def _append_exchange_info_about_ticker(self, tickers_list: list[dict]):
+        def find(lst, key, value):
+            for i, dic in enumerate(lst):
+                if dic.get(key, "") == value:
+                    return i
+            return -1
+
+        exchange_info = self.c.get_exchange_info().get("symbols")
+        tickers_to_search = [ticker.get("symbol") for ticker in tickers_list]
+        return_list = []
+
+        for ticker in exchange_info:
+            symbol = ticker.get("symbol")
+            if symbol in tickers_to_search:
+                index = find(tickers_list, "symbol", symbol)
+                return_list.append({**tickers_list[index], **ticker})
+
+        return return_list
 
     def _get_tickers_price(self, tickers_to_search: list[dict]):
         result_pairs = []
