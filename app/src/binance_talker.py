@@ -80,10 +80,13 @@ class BinancePostInfoConnector:
 
     def sell_all_spot_coins_with_ticker(self, ticker_info: dict):
         ticker = ticker_info.get("symbol")
-        quantity = ticker_info.get("available_to_sell_coin") * Other.sell_order_multiplier.value
+        quantity = round(ticker_info.get("available_to_sell_coin") * Other.sell_order_multiplier.value, 1)
 
-        self.c.order_market(
+        print(quantity)
+
+        self.c.create_order(
             symbol=ticker,
             side="SELL",
+            type="MARKET",
             quantity=quantity
         )
