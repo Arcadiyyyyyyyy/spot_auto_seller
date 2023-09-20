@@ -23,7 +23,7 @@ class BinanceGetInfoConnector:
         tickers_with_price = self._get_tickers_price(tickers_for_search)
         tickers_with_exchange_info = self._append_exchange_info_about_ticker(tickers_with_price)
         tickers_calculated_min_order_info = [is_more_than_min_order(x) for x in tickers_with_exchange_info]
-        return tickers_calculated_min_order_info
+        return [x for x in tickers_calculated_min_order_info if x.get("is_more_than_min_order") is True]
 
     def _get_spot_balance(self) -> list[dict]:
         assets_that_cost_more_than_x = []
@@ -80,9 +80,21 @@ class BinancePostInfoConnector:
 
     def sell_all_spot_coins_with_ticker(self, ticker_info: dict):
         ticker = ticker_info.get("symbol")
-        quantity = round(ticker_info.get("available_to_sell_coin") * Other.sell_order_multiplier.value, 1)
+        precision_string = ""
 
-        print(quantity)
+        for x in ticker_info.get("filters"):
+            if x.get("filterType") == "LOT_SIZE":
+                precision_string = x.get("minQty", 0.0)
+                break
+
+        # TODO: convert precision string to integer.
+        #  API returns precision as "0.01000" or "0.100000" or "1.00000" or "0.00010000".
+        #  You need to convert into round argument for quantity calculation.
+        #  For example: if you got "0.100000" = you should have precision as 1.
+        #  If you got "1.00000" = as 0. If you got "0.00010000" = as 4
+        precision: int = int(precision_string)
+
+        quantity = round(ticker_info.get("available_to_sell_coin") * Other.sell_order_multiplier.value, precision)
 
         self.c.create_order(
             symbol=ticker,

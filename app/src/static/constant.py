@@ -6,4 +6,4 @@ class MinimumToDisplay(Enum):
 
 
 class Other(Enum):
-    sell_order_multiplier = 0.98
+    sell_order_multiplier = 0.99
