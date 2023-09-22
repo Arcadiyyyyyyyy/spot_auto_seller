@@ -1,7 +1,11 @@
+import logging
+
+import binance.exceptions
 from binance import Client
 from os import environ
 
 from .static.constant import MinimumToDisplay, Other
+from .static.exceptions import WrongAPIKey
 from .calculations import is_more_than_min_order
 
 
@@ -16,6 +20,23 @@ class BinanceGetInfoConnector:
 
     def __init__(self):
         self.c = _create_connection()
+
+    def check_if_api_key_is_valid(self):
+        logging.info("Started checking is binance api key is valid")
+        account, spot_info = {}, {}
+        try:
+            account = self.c.get_account()
+            spot_info = self.c.get_account_api_permissions()
+        except binance.exceptions.BinanceAPIException:
+            logging.error("Most certainly wrong api key")
+
+        if not account or account.get("canTrade", False) is not True:
+            raise WrongAPIKey("Failed to fetch info with this key. Make sure that the key from .env works.")
+
+        if not spot_info or spot_info.get("enableSpotAndMarginTrading", False) is not True:
+            raise WrongAPIKey("API key does not have required (spot trade) permissions.")
+
+        logging.info("API key is valid!")
 
     def get_account_data(self):
         spot_balance = self._get_spot_balance()
