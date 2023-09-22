@@ -1,27 +1,20 @@
 from binance import Client
 from os import environ
 from pydantic_settings import BaseSettings
+from src.config import Settings
 
 import json
-
 from fastapi import FastAPI
 from .static.constant import MinimumToDisplay, Other
 from .calculations import is_more_than_min_order
 
-class Settings(BaseSettings):
-    BINANCE_API_PUBLIC: str
-    BINANCE_API_SECRET:  str
-    LIST_OF_TICKERS_TO_SELL: list
-    class Config:
-        env_file = ".env"
 
-settings = Settings()
-app = FastAPI()
 def _create_connection() -> Client:
     api_public = environ.get("BINANCE_API_PUBLIC")
     api_secret = environ.get("BINANCE_API_SECRET")
     return Client(api_public, api_secret)
 
+app = FastAPI()
 
 class BinanceGetInfoConnector:
     c = None
@@ -33,7 +26,7 @@ class BinanceGetInfoConnector:
         spot_balance = self._get_spot_balance()
         tickers_for_search = self._clean_tickers_list(spot_balance)
         tickers_to_keep = [ticker for ticker in tickers_for_search if
-                           ticker.get('asset') in settings.LIST_OF_TICKERS_TO_SELL]
+                           ticker.get('asset') in json.loads(environ.get("LIST_OF_TICKERS_TO_SELL","[]"))]
         tickers_with_price = self._get_tickers_price(tickers_to_keep)
         tickers_with_exchange_info = self._append_exchange_info_about_ticker(tickers_with_price)
         tickers_calculated_min_order_info = [is_more_than_min_order(x) for x in tickers_with_exchange_info]
