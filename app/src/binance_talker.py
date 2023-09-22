@@ -1,20 +1,16 @@
 from binance import Client
 from os import environ
-from pydantic_settings import BaseSettings
-from src.config import Settings
 
 import json
-from fastapi import FastAPI
+
 from .static.constant import MinimumToDisplay, Other
 from .calculations import is_more_than_min_order
-
 
 def _create_connection() -> Client:
     api_public = environ.get("BINANCE_API_PUBLIC")
     api_secret = environ.get("BINANCE_API_SECRET")
     return Client(api_public, api_secret)
 
-app = FastAPI()
 
 class BinanceGetInfoConnector:
     c = None
