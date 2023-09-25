@@ -1,10 +1,9 @@
 import logging
-
+import json
 import binance.exceptions
+
 from binance import Client
 from os import environ
-
-import json
 
 from .static.constant import MinimumToDisplay, Other
 from .static.exceptions import WrongAPIKey

@@ -5,9 +5,9 @@ import schedule
 from dotenv import load_dotenv
 from traceback import format_exception
 
-from src.regular_tasks import sell_if_enough_to_sell
 from src.config import Settings, configure_logging
 from src.binance_talker import BinanceGetInfoConnector
+from src.tasks import notify_all_admins_in_telegram
 
 
 def main():
@@ -16,8 +16,6 @@ def main():
     configure_logging()
 
     BinanceGetInfoConnector().check_if_api_key_is_valid()
-
-    sell_if_enough_to_sell()
 
     logging.info("Started!")
 
@@ -29,6 +27,7 @@ def main():
             logging.warning("Finished with Ctrl+C")
             return
         except Exception as e:
+            notify_all_admins_in_telegram("Error happened in spot_auto_seller. Check the logs asap.")
             logging.error(format_exception(e))
 
 

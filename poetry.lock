@@ -652,6 +652,32 @@ pydantic = ">=2.0.1"
 python-dotenv = ">=0.21.0"
 
 [[package]]
+name = "pytelegrambotapi"
+version = "4.14.0"
+description = "Python Telegram bot api."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyTelegramBotAPI-4.14.0.tar.gz", hash = "sha256:90a9dd5cea6d7edcf478a7a28f93be5e968ac2539c0278aecbd6b28627267ab1"},
+]
+
+[package.dependencies]
+requests = "*"
+
+[package.extras]
+aiohttp = ["aiohttp"]
+aioredis = ["aioredis"]
+coloredlogs = ["coloredlogs"]
+fastapi = ["fastapi"]
+json = ["ujson"]
+pil = ["Pillow"]
+psutil = ["psutil"]
+redis = ["redis (>=3.4.1)"]
+uvicorn = ["uvicorn"]
+watchdog = ["watchdog"]
+
+[[package]]
 name = "python-binance"
 version = "1.0.19"
 description = "Binance REST API python implementation"
@@ -1160,4 +1186,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "bf6f513e0e77d5d1caf2305cc117f88c00fd88569dc96ce69fecff6c82a397c5"
+content-hash = "7f819fe95210dabffac76744543c0378fc8071ab5d05c53194708e523293926b"
