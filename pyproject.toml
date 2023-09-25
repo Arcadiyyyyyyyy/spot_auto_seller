@@ -10,6 +10,7 @@ packages = [{include = "spot_auto_seller"}]
 python = "^3.11"
 python-binance = "^1.0.19"
 pydantic-settings = "^2.0.3"
+schedule = "^1.2.0"
 
 
 [build-system]

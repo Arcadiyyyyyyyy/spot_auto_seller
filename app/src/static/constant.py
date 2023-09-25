@@ -7,3 +7,7 @@ class MinimumToDisplay(Enum):
 
 class Other(Enum):
     sell_order_multiplier = 0.99
+
+
+class HowOftenToExecute(Enum):
+    seconds_sell_if_enough_to_sell = 1
