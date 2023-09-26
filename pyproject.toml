@@ -14,6 +14,16 @@ schedule = "^1.2.0"
 pytelegrambotapi = "^4.14.0"
 
 
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "--cov=app"
+testpaths = [
+    "tests",
+]
